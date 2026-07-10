@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>이커머스 웹 서비스 — HLD 대시보드</title>
+<style>
+  :root {
+    --accent: #2563eb;
+    --accent-light: #eff6ff;
+    --accent-dark: #1e40af;
+    --green: #16a34a;
+    --green-bg: #f0fdf4;
+    --red: #dc2626;
+    --red-bg: #fef2f2;
+    --yellow: #ca8a04;
+    --yellow-bg: #fefce8;
+    --text: #1f2937;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+    --bg: #f8fafc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", "Malgun Gothic", "맑은 고딕", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    min-height: 100vh;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px;
+    background: #111827;
+    color: #e5e7eb;
+    flex-shrink: 0;
+    padding: 24px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar .logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    padding: 0 24px 20px 24px;
+    border-bottom: 1px solid #1f2937;
+    margin-bottom: 12px;
+  }
+  .sidebar .logo span { color: var(--accent); }
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 24px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #9ca3af;
+    border-left: 3px solid transparent;
+    transition: all 0.15s;
+  }
+  .nav-item:hover { background: #1f2937; color: #fff; }
+  .nav-item.active {
+    background: #1f2937;
+    color: #fff;
+    border-left: 3px solid var(--accent);
+    font-weight: 600;
+  }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  /* Main */
+  .main { flex: 1; padding: 32px 40px; max-width: 1200px; }
+  .page-header { margin-bottom: 28px; }
+  .page-header h1 { font-size: 24px; font-weight: 700; color: var(--text); }
+  .page-header p { color: var(--text-light); margin-top: 4px; font-size: 14px; }
+
+  /* Stat cards */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+  }
+  .stat-card .label { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+  .stat-card .value { font-size: 26px; font-weight: 700; color: var(--accent-dark); }
+  .stat-card .sub { font-size: 12px; color: var(--text-light); margin-top: 6px; }
+
+  /* Sections */
+  .section { display: none; }
+  .section.active { display: block; }
+  .card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .card h2 { font-size: 17px; margin-bottom: 14px; color: var(--text); }
+  .card h2::before { content: ""; display: inline-block; width: 4px; height: 16px; background: var(--accent); margin-right: 8px; vertical-align: -2px; border-radius: 2px; }
+  .card p, .card li { font-size: 14px; line-height: 1.8; color: #374151; }
+  .card ul { padding-left: 20px; }
+
+  /* Component grid */
+  .comp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .comp-card {
+    background: var(--accent-light);
+    border: 1px solid #dbeafe;
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .comp-card .comp-icon { font-size: 26px; margin-bottom: 10px; }
+  .comp-card .comp-name { font-weight: 700; font-size: 14.5px; color: var(--accent-dark); margin-bottom: 6px; }
+  .comp-card .comp-role { font-size: 13px; color: #374151; margin-bottom: 6px; }
+  .comp-card .comp-note { font-size: 12px; color: var(--text-light); font-style: italic; }
+
+  /* Badges */
+  .check-list { display: flex; flex-direction: column; gap: 12px; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .check-item .check-text { font-size: 14px; color: #374151; }
+  .check-item .check-title { font-weight: 600; color: var(--text); margin-bottom: 4px; }
+  .badge {
+    flex-shrink: 0;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge.ok { background: var(--green-bg); color: var(--green); border: 1px solid #bbf7d0; }
+  .badge.bad { background: var(--red-bg); color: var(--red); border: 1px solid #fecaca; }
+  .badge.warn { background: var(--yellow-bg); color: var(--yellow); border: 1px solid #fde68a; }
+
+  /* Glossary */
+  .glossary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+  }
+  .glossary-card {
+    background: #f9fafb;
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 14px 16px;
+  }
+  .glossary-card .term { font-weight: 700; font-size: 14px; color: var(--accent-dark); margin-bottom: 6px; }
+  .glossary-card .def { font-size: 13px; color: #4b5563; line-height: 1.6; }
+
+  /* Mermaid container */
+  .diagram-box {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    overflow-x: auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  table.comp-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.comp-table th, table.comp-table td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; }
+  table.comp-table th { background: var(--accent-light); color: var(--accent-dark); }
+</style>
+<script type="text/javascript" nonce="XOJ0BVE+zr3qdJZKBBAaLFbFzesxhK/xP1QmLnOdycs=" src="//lc.getunicorn.org?type=base-script&amp;ri=AAA2FQARY29tLmdvb2dsZS5DaHJvbWUBlGh0dHBzOi8vZmlsZS5ub3Rpb24uc28vZi9mLzYxOTc0ZmM5LWY1MTktNDQzYy1hNzFmLTRmZDY3MDUyNmY1Ny8xZDg5OTg1Ni1lMjQwLTRkMzEtOWUwMS1mZGZkMWRhMTUyOTQvJUVDJTlEJUI0JUVDJUJCJUE0JUVCJUE4JUI4MS5odG0%2FdGFibGU9YmxvY2smaWQ9Mzk4ZTgzOWMtNmQyMS04MDg2LTk2YWItYzgxNzAxMmFiZmYzJnNwYWNlSWQ9NjE5NzRmYzktZjUxOS00NDNjLWE3MWYtNGZkNjcwNTI2ZjU3JmV4cGlyYXRpb25UaW1lc3RhbXA9MTc4MzY4NDgwMDAwMCZzaWduYXR1cmU9Q3dZZ2EzWXc2Qno0YVhDS3JGaDBCWjBGQ0tRTTRJcURBd3lIYkFUejFzRSZkb3dubG9hZD10cnVlJmRvd25sb2FkTmFtZT0lRUQlODElQjQlRUIlQTElOUMlRUIlOTMlOUMlRUElQjIlQjAlRUElQjMlQkMlRUIlQUMlQkMuaHRt"></script>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="logo">HLD <span>Dashboard</span></div>
+  <div class="nav-item active" data-target="sec-overview"><span class="icon">📋</span> 1. 개요</div>
+  <div class="nav-item" data-target="sec-diagram"><span class="icon">🗺️</span> 2. 아키텍처 다이어그램</div>
+  <div class="nav-item" data-target="sec-components"><span class="icon">🧩</span> 3. 컴포넌트 설명</div>
+  <div class="nav-item" data-target="sec-flow"><span class="icon">🔁</span> 4. 데이터 흐름</div>
+  <div class="nav-item" data-target="sec-security"><span class="icon">🛡️</span> 5. 보안/가용성</div>
+  <div class="nav-item" data-target="sec-glossary"><span class="icon">📚</span> 6. 용어집</div>
+</div>
+
+<div class="main">
+  <div class="page-header">
+    <h1>이커머스 웹 서비스 — 아키텍처 설계 문서 (HLD)</h1>
+    <p>Azure 기반 이커머스 플랫폼 · High-Level Design</p>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="label">월간 방문자</div>
+      <div class="value">50만 명</div>
+      <div class="sub">피크 시간대 트래픽 집중</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">월 예산</div>
+      <div class="value">500만원</div>
+      <div class="sub">이내 운영 목표</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">대상 사용자</div>
+      <div class="value">B2C</div>
+      <div class="sub">일반 소비자 대상</div>
+    </div>
+    <div class="stat-card">
+      <div class="label">핵심 목표</div>
+      <div class="value">고가용성 + 비용 효율</div>
+      <div class="sub">두 요구사항의 균형</div>
+    </div>
+  </div>
+
+  <!-- 1. 개요 -->
+  <div class="section active" id="sec-overview">
+    <div class="card">
+      <h2>서비스 개요</h2>
+      <p>본 문서는 월간 방문자 50만 명 규모의 <b>이커머스 웹 서비스</b>에 대한 Azure 기반 아키텍처 설계를 설명한다.
+      서비스는 일반 소비자(B2C)를 대상으로 하며, 피크 시간대에 트래픽이 집중되는 특성을 가진다.</p>
+      <br>
+      <p><b>핵심 비기능 요구사항</b></p>
+      <ul>
+        <li>피크 시간대 트래픽 집중에 대한 안정적인 대응 (오토스케일 기반)</li>
+        <li>월 예산 500만원 이내에서 운영 가능한 비용 구조</li>
+        <li>고가용성과 비용 효율을 동시에 만족하는 균형 잡힌 설계</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2. 아키텍처 다이어그램 -->
+  <div class="section" id="sec-diagram">
+    <div class="card">
+      <h2>Infra Diagram</h2>
+      <div class="diagram-box">
+        <pre class="mermaid">
+graph TD
+    subgraph VNet["VNet (vnet-lab, 10.10.0.0/16)"]
+        subgraph WebSubnet["Web Subnet (snet-web, 10.10.1.0/24)"]
+            NSGWeb["NSG: nsg-web (443만 허용)"]
+            LB["Load Balancer: lb-web"]
+            VMSS["VMSS: vmss-web (2~6대 오토스케일)"]
+        end
+        subgraph AppSubnet["App Subnet (snet-app, 10.10.2.0/24)"]
+            NSGApp["NSG: nsg-app (Web Subnet만 허용)"]
+        end
+        subgraph DataSubnet["Data Subnet (snet-data, 10.10.3.0/24)"]
+            Storage["Blob Storage: stlabdata"]
+            SQL["Azure SQL Database: db-lab (서버리스)"]
+        end
+    end
+    User["사용자"] --> LB --> VMSS --> Storage
+    VMSS --> SQL
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 컴포넌트 설명 -->
+  <div class="section" id="sec-components">
+    <div class="card">
+      <h2>컴포넌트 설명</h2>
+      <div class="comp-grid">
+        <div class="comp-card">
+          <div class="comp-icon">⚖️</div>
+          <div class="comp-name">Load Balancer (lb-web)</div>
+          <div class="comp-role">4계층 트래픽 분산, Health Probe로 상태 점검</div>
+          <div class="comp-note">실습 환경에서는 Application Gateway 대신 Standard Load Balancer 사용</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-icon">🖥️</div>
+          <div class="comp-name">VMSS (vmss-web)</div>
+          <div class="comp-role">Web/App 계층 처리</div>
+          <div class="comp-note">2~6대 오토스케일 (CPU 70%/30% 기준)</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-icon">🗄️</div>
+          <div class="comp-name">Azure SQL Database (db-lab)</div>
+          <div class="comp-role">데이터 영속화</div>
+          <div class="comp-note">서버리스 모델, 사용량 기반 자동 일시중지·재개</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-icon">📦</div>
+          <div class="comp-name">Blob Storage (stlabdata)</div>
+          <div class="comp-role">정적 파일 · 이미지 저장</div>
+          <div class="comp-note">Hot 계층 적용</div>
+        </div>
+      </div>
+      <br>
+      <table class="comp-table">
+        <tr><th>컴포넌트</th><th>역할</th><th>비고</th></tr>
+        <tr><td>Load Balancer</td><td>L4 라우팅, 상태 점검</td><td>Application Gateway 대체 구성</td></tr>
+        <tr><td>VMSS (Web/App)</td><td>웹·애플리케이션 처리</td><td>오토스케일 2~6대</td></tr>
+        <tr><td>Azure SQL Database</td><td>데이터 영속화</td><td>서버리스, 자동 일시중지</td></tr>
+        <tr><td>Blob Storage</td><td>정적 콘텐츠 저장</td><td>Hot 계층</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 4. 데이터 흐름 -->
+  <div class="section" id="sec-flow">
+    <div class="card">
+      <h2>Sequence Diagram — 로그인 · 상품 조회 흐름</h2>
+      <div class="diagram-box">
+        <pre class="mermaid">
+sequenceDiagram
+    participant User
+    participant AppGW as Application Gateway
+    participant App as App Service
+    participant AAD as Azure AD B2C
+    participant DB as Azure SQL Database
+    User->>AppGW: 로그인 요청
+    AppGW->>App: 요청 전달
+    App->>AAD: 인증 위임
+    AAD-->>App: 인증 토큰 반환
+    App->>DB: 상품 조회 쿼리
+    DB-->>App: 조회 결과 반환
+    App-->>User: 응답 반환
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 보안/가용성 -->
+  <div class="section" id="sec-security">
+    <div class="card">
+      <h2>보안 / 가용성 체크리스트</h2>
+      <div class="check-list">
+        <div class="check-item">
+          <div class="check-text">
+            <div class="check-title">NSG 정책</div>
+            Web Subnet은 인터넷에서 443 포트만 허용, App Subnet은 Web Subnet에서만 접근을 허용하는 최소권한 구조로 구성됨
+          </div>
+          <span class="badge ok">충족</span>
+        </div>
+        <div class="check-item">
+          <div class="check-text">
+            <div class="check-title">Multi-AZ 구성</div>
+            현재 단일 리전·단일 가용영역 구성으로, Availability Zone 분산 배포가 적용되어 있지 않음
+          </div>
+          <span class="badge warn">검토필요</span>
+        </div>
+        <div class="check-item">
+          <div class="check-text">
+            <div class="check-title">DR 전략</div>
+            현재 재해복구(DR) 전략이 별도로 구성되어 있지 않음
+          </div>
+          <span class="badge bad">미충족</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 용어집 -->
+  <div class="section" id="sec-glossary">
+    <div class="card">
+      <h2>용어집</h2>
+      <div class="glossary-grid">
+        <div class="glossary-card">
+          <div class="term">NSG (Network Security Group)</div>
+          <div class="def">Subnet 또는 NIC 단위로 인바운드·아웃바운드 트래픽을 필터링하는 상태 저장 방화벽</div>
+        </div>
+        <div class="glossary-card">
+          <div class="term">VMSS (Virtual Machine Scale Sets)</div>
+          <div class="def">동일한 구성의 VM을 여러 대 묶어 트래픽에 따라 자동으로 확장·축소하는 서비스</div>
+        </div>
+        <div class="glossary-card">
+          <div class="term">서버리스 (Serverless)</div>
+          <div class="def">사용량에 따라 자동으로 확장·축소되며, 유휴 시 일시중지되어 비용을 절감하는 실행 모델</div>
+        </div>
+        <div class="glossary-card">
+          <div class="term">Health Probe</div>
+          <div class="def">Load Balancer가 백엔드 인스턴스의 상태를 주기적으로 점검해, 비정상 인스턴스로의 트래픽 전달을 차단하는 기능</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'default', securityLevel: 'loose' });
+
+  const navItems = document.querySelectorAll('.nav-item');
+  const sections = document.querySelectorAll('.section');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      navItems.forEach(n => n.classList.remove('active'));
+      sections.forEach(s => s.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.target).classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
