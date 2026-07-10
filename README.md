@@ -51,4 +51,7 @@ Azure Cloud Shell(CLI)로 리소스를 직접 만들고, GenAI **Before/After**(
 - [Azure Well-Architected Framework](https://learn.microsoft.com/en-us/azure/well-architected/)
 - [Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/browse/)
 - [Mermaid 공식 문서](https://mermaid.js.org)
+
+- [강의](https://url.kr/1asqve)
+- [교재](https://flunti.notion.site/ai-azure-lab)
 - [Azure Infra Lab](https://psedu.gitbook.io/azure-infra-lab)
