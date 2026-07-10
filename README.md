@@ -39,8 +39,12 @@ Azure Cloud Shell(CLI)로 리소스를 직접 만들고, GenAI **Before/After**(
 | [Lab 0. 공통 환경 구성](./labs/lab-00-setup.md) | — | Cloud Shell, 리소스 그룹, GenAI 계정, (Day 2) 모니터링 스택 |
 | [Day 1. 기초 아키텍처 (Lab 1~4)](./labs/day1-labs.md) | Section 1~4 | VNet/Subnet/LB, NSG/RBAC, VMSS/오토스케일/스토리지, Advisor/DR/정리 |
 | [Day 2. 검증·문서화·운영 (Lab 5~8)](./labs/day2-labs.md) | Section 5~8 | Well-Architected 검증, Mermaid HLD, App Insights/KQL/Alert, 이상탐지/포스트모템 |
+| [종합 실습 (Capstone) 🎫](./labs/capstone-ticketing.md) | Section 1~8 전체 | 티켓 예매 서비스 — 순간 트래픽 200배 폭증 시나리오 통합 설계 챌린지 |
 
 > ⚠️ **비용 주의**: 실습은 VM·SQL·App Service 등 과금 리소스를 생성합니다. 각 Day 마지막의 `az group delete`로 반드시 정리하세요.
+
+### 🎫 종합 실습 (Capstone) 소개
+Day 1~2에서 배운 8개 Section을 **하나의 시나리오로 통합**하는 부록 실습입니다. "티켓 오픈 10분에 트래픽이 200배 폭증하는" 이벤트성 서비스를 설계 → 검증 → 문서화 → 운영까지 관통하며, 정답이 정해지지 않은 **설계 챌린지** 형태입니다. 예약 스케일링·캐싱 전략·비대칭 비용 최적화 등 실무 난제를 다루고, AI 산출물을 비판적으로 검증하는 훈련이 핵심입니다.
 
 ## 관통하는 핵심 원칙
 - **AI 산출물은 항상 초안(draft)** — 아키텍트의 검증·조정을 반드시 거친다.
