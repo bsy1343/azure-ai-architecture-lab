@@ -242,3 +242,8 @@ az group show --name $USER-rg --output table   # 완료 시 ResourceNotFound
 - [ ] 포스트모템 초안 작성
 - [ ] `az group delete`로 전체 리소스 정리
 - [ ] Day 2 Lab 5~8 전부 완료
+
+---
+
+## 🎫 다음 단계 — 종합 실습 (Capstone)
+Day 1~2를 모두 마쳤다면, 배운 8개 Section을 하나의 시나리오로 통합하는 **[종합 실습: 티켓 예매 서비스](./capstone-ticketing.md)** 에 도전해보세요. 순간 트래픽 200배 폭증이라는 실무형 난제를 설계부터 운영까지 관통합니다.
