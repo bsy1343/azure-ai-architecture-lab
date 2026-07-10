@@ -59,3 +59,6 @@ Day 1~2에서 배운 8개 Section을 **하나의 시나리오로 통합**하는 
 - [강의](https://url.kr/1asqve)
 - [교재](https://flunti.notion.site/ai-azure-lab)
 - [Azure Infra Lab](https://psedu.gitbook.io/azure-infra-lab)
+
+# 강사메일
+- wsjang@gkn.co.kr
